@@ -1,0 +1,449 @@
+<div>
+    <ui-c-subheader [menuTitle]="'Implantação de projeto'" [level1]="'Gerenciar Funcionalidades'">
+    </ui-c-subheader>
+   
+
+    
+    <!-- Modal -->
+   
+
+
+
+
+  
+    <div *ngIf="typeForm == 1"  class="ui-c-taskbar-bo">
+      <span *ngIf="loading" class="loader"></span>
+      <div *ngIf="!loading" class="card card-custom search-col">
+        <div class="row d-flex justify-content-between pr-0 pl-10 col-12">
+          <div class="col-3 search-bar">
+              <mat-form-field>
+                <mat-label>Selecione o parceiro</mat-label>
+              <mat-select [(ngModel)]="data.partner">
+                <mat-option (click)="applyFilter()" [value]="null">
+                 Nenhum
+                  </mat-option>
+              <mat-option (click)="applyFilter()"  *ngFor="let food of partnerList" [value]="food == null ? 'Todos os Parceiros' : food">
+              {{food == null ? "Todos os Parceiros" : food}}
+              </mat-option>
+              </mat-select>
+              </mat-form-field>
+          </div>
+          <div class="col-3 search-bar">
+            <div class="input-group">
+              <input [(ngModel)]="data.numberAccout" type="text" class="form-control" placeholder="Pesquisar por número da conta" #searchInput
+                (keyup)="applyFilter()" />
+            </div>
+            
+          </div>
+          <div class="col-6 search-bar">
+            <div class="input-group">
+              
+              <button class="btn btn-info" type="button" (click)="verifySearch()">
+                Pesquisar <i class="fas fa-chevron-right icon-xs ml-3"></i>
+              </button>
+
+
+              <!-- <button (click)="verifySearch()" mat-raised-button color="primary">Ver mais</button> -->
+            </div>
+            
+          </div>
+          
+     
+        </div>
+      </div><br>
+      <div *ngIf="newSearch" class="card card-custom search-col">
+        <div class="row d-flex justify-content-between pr-0 pl-10 col-12">
+          <div class="col-3 search-bar">
+            <mat-form-field>
+              <mat-label>Selecione a categoria</mat-label>
+            <mat-select [(ngModel)]="data.category">
+              <mat-option (click)="applyFilter()" [value]="null">
+               Nenhum
+                </mat-option>
+            <mat-option (click)="applyFilter()"  *ngFor="let food of categoryList" [value]="food">
+            {{food}}
+            </mat-option>
+            </mat-select>
+            </mat-form-field>
+            
+          </div>
+          <div class="col-3 search-bar">
+            <mat-form-field>
+              <mat-label>Selecione a Aplicação</mat-label>
+             
+            <mat-select [(ngModel)]="data.type">
+              <mat-option (click)="applyFilter()" [value]="null">
+                Nenhum
+                 </mat-option>
+            <mat-option *ngFor="let food of categoryType" (click)="applyFilter()" [value]="food">
+              {{food}}
+                </mat-option>
+           
+          
+            </mat-select>
+            </mat-form-field>
+            
+          </div>
+          <div class="col-3 search-bar">
+            <mat-form-field>
+              <mat-label>Selecione o Status</mat-label>
+            <mat-select [(ngModel)]="data.status">
+              <mat-option (click)="applyFilter()" [value]="null">
+                Nenhum
+                 </mat-option>
+            <mat-option *ngFor="let value of categoryStatus" (click)="applyFilter()" [value]="value.type">
+              {{value.name}}
+                </mat-option>
+          
+            </mat-select>
+            </mat-form-field>
+          </div>
+          </div>
+      </div><br>
+    </div>
+
+
+
+
+    <input *ngIf="typeForm == 1" type="checkbox" id="modal">
+    <label *ngIf="typeForm == 1" (click)="modal(2)" class="btn btn-info" type="button" (click)="applyFilter()">
+      Adicionar Funcionalidade <i class="fas fa-chevron-right icon-xs ml-3"></i>
+    </label>
+    <!-- <label *ngIf="typeForm == 1" (click)="modal(2)" class="example-label">Adicionar Parceiro</label> -->
+    <label *ngIf="typeForm == 1" for="modal" class="modal-background"></label>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">{{nameModal}} </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Você deseja deletar a conta: {{name}}?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Voltar</button>
+            <button type="button" (click)="deleteAccount()" data-bs-dismiss="modal" class="btn btn-primary">Excluir</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+
+  
+    <div  class="ui-c-table-bo p-0" #element>
+
+
+      <div  class="card card-custom table-col mt-10">
+        
+      
+        <div [hidden]="typeForm != 1">
+        <table mat-table #table [dataSource]="dataSource">
+          <!-- Project Column -->
+          <ng-container matColumnDef="client">
+            <th *matHeaderCellDef class="font-family-bold pl-4">Parceiro</th>
+            <td *matCellDef="let element" class="font-family-semibold pl-5">{{ element?.uuidWhitelabel != null ? element?.uuidWhitelabel : "Todos os parceiros" }}</td>
+          </ng-container>
+          <!-- CNPJ Column -->
+          <ng-container matColumnDef="cnpj">
+            <th *matHeaderCellDef class="font-family-bold">Número de conta</th>
+            <td *matCellDef="let element" class="font-family-semibold">{{ element?.accountNumber | pvCnpj}} <br>
+              {{element?.companyData?.companyName}}</td>
+          </ng-container>
+          <!-- Status Column -->
+
+          <ng-container matColumnDef="title">
+            <th *matHeaderCellDef class="font-family-bold">Título</th>
+            <td *matCellDef="let element" class="font-family-semibold">{{ element?.title}} <br>
+              {{element?.companyData?.companyName}}</td>
+          </ng-container>
+        
+          <!-- Data Column -->
+          <ng-container matColumnDef="category">
+            <th *matHeaderCellDef class="font-family-bold">Categoria</th>
+            <td *matCellDef="let element" class="font-family-semibold">{{ element?.category}} <br>
+              {{element?.companyData?.companyName}}</td>
+          </ng-container>
+
+
+          <!-- Action Column -->
+          <ng-container matColumnDef="aplication">
+            <th *matHeaderCellDef class="font-family-bold">Aplicação</th>
+            <td *matCellDef="let element" class="font-family-semibold">
+              {{element?.aplication}}</td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th *matHeaderCellDef class="font-family-bold">Status</th>
+            <td *matCellDef="let element" class="font-family-bold">
+              <span [class]="element.color"> {{ element?.status }}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <th *matHeaderCellDef class="font-family-bold">Ação</th>
+            <td *matCellDef="let element">
+          <a  class="btn btn-icon btn-light btn-sm mx-3"><span (click)="modal(3, element)"
+                  class="svg-icon svg-icon-md svg-icon-primary"><svg width="24px" height="24px" viewBox="0 0 24 24"
+                    version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <!-- Generator: Sketch 50.2 (55047) - http://www.bohemiancoding.com/sketch -->
+                    <title>Stockholm-icons / Communication / Write</title>
+                    <desc>Created with Sketch.</desc>
+                    <defs></defs>
+                    <g  id="Stockholm-icons-/-Communication-/-Write" stroke="none" stroke-width="1" fill="none"
+                      fill-rule="evenodd">
+                      <rect id="bound" x="0" y="0" width="24" height="24"></rect>
+                      <path 
+                        d="M12.2674799,18.2323597 L12.0084872,5.45852451 C12.0004303,5.06114792 12.1504154,4.6768183 12.4255037,4.38993949 L15.0030167,1.70195304 L17.5910752,4.40093695 C17.8599071,4.6812911 18.0095067,5.05499603 18.0083938,5.44341307 L17.9718262,18.2062508 C17.9694575,19.0329966 17.2985816,19.701953 16.4718324,19.701953 L13.7671717,19.701953 C12.9505952,19.701953 12.2840328,19.0487684 12.2674799,18.2323597 Z"
+                        id="Path-11" fill="#000000" fill-rule="nonzero"
+                        transform="translate(14.701953, 10.701953) rotate(-135.000000) translate(-14.701953, -10.701953) ">
+                      </path>
+                      <path
+                        d="M12.9,2 C13.4522847,2 13.9,2.44771525 13.9,3 C13.9,3.55228475 13.4522847,4 12.9,4 L6,4 C4.8954305,4 4,4.8954305 4,6 L4,18 C4,19.1045695 4.8954305,20 6,20 L18,20 C19.1045695,20 20,19.1045695 20,18 L20,13 C20,12.4477153 20.4477153,12 21,12 C21.5522847,12 22,12.4477153 22,13 L22,18 C22,20.209139 20.209139,22 18,22 L6,22 C3.790861,22 2,20.209139 2,18 L2,6 C2,3.790861 3.790861,2 6,2 L12.9,2 Z"
+                        id="Path-57" fill="#000000" fill-rule="nonzero" opacity="0.3"></path>
+                    </g>
+                  </svg></span></a>
+                  <label  (click)="openModal(3, element?.accountNumber, element?.uuid)" data-bs-toggle="modal" data-bs-target="#exampleModal" class="material-icons" for="modal" style="color: red; cursor: pointer; position: relative; top: 4px">delete</label>
+           
+            </td>
+          </ng-container>
+        
+            
+  
+          <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+        </table>
+       
+        <mat-paginator [pageSizeOptions]="[10, 20]"
+        showFirstLastButtons
+        aria-label="Select page of periodic elements">
+</mat-paginator>
+
+</div>
+        <form *ngIf="typeForm == 2" [formGroup]="bioSection" (ngSubmit)="callingFunction()">
+          
+          <div class="row">
+            <div class="col-sm">
+              <label style="position: relative; margin-bottom: -5px;">Parceiro</label>
+              <!-- <input type="text" formControlName="uuidWhitelabel" class="form-control" id="input-modal" placeholder="Parceiro" /><br> -->
+         
+         
+              <mat-select [(ngModel)]="modeselectParceiro"  formControlName="uuidWhitelabel" class="form-control" id="input-modal">
+          <mat-option [value]="null">Selecione o Parceiro</mat-option>
+            <mat-option *ngFor="let skill of valueUuidWhitelabel"  [value]="skill.uuid">{{skill.name}}</mat-option>
+          </mat-select><br><br> 
+
+          <label style="position: relative; margin-bottom: -5px;">Título</label>
+          <input type="text" formControlName="title" class="form-control" id="input-modal" placeholder="Titulo" /><br>
+
+          <label style="position: relative; margin-bottom: -5px;">Categoria</label>
+              <mat-select [(ngModel)]="selectedCity" class="form-control" id="input-modal" formControlName="category">
+        
+                <mat-option (click)="selectCategory()"   *ngFor="let skill of categoryValue" [value]="skill">{{skill}}</mat-option>
+              </mat-select><br><br>
+
+
+         <label *ngIf="openMenu" style="position: relative; margin-bottom: -5px;">URL</label>
+         <input *ngIf="openMenu" type="text" formControlName="url" class="form-control" id="input-modal" placeholder="URL" /><br>
+ 
+
+              <label *ngIf="openSubMenu" style="position: relative; margin-bottom: -5px;">ItensSubMenu</label>
+              <mat-select *ngIf="openSubMenu" [(ngModel)]="itensSubMenu[0]" class="form-control" id="input-modal" formControlName="uuidParent">
+        
+                <mat-option  *ngFor="let skill of itensSubMenu" [value]="skill.uuid">{{skill.title}}</mat-option>
+              </mat-select><br><br>
+
+
+          <label *ngIf="openApp" style="position: relative; left: 5%; margin-bottom: -5px;">iconApp</label>
+          <input *ngIf="openApp" type="text" formControlName="iconApp" class="form-control" id="input-modal" placeholder="Parceiro" /><br>
+
+          <label *ngIf="openApp"  style="position: relative; left: 5%; margin-bottom: -5px;">Ordem App</label>
+          <input *ngIf="openApp" maxlength="10" type="number" formControlName="sequenceApp" class="form-control" id="input-modal" placeholder="Parceiro" /><br>
+          
+ 
+
+
+
+
+
+         
+            </div>
+
+
+            <div class="col-sm">
+             
+              <label style="position: relative; margin-bottom: -5px;">Conta</label>
+              <input type="text" formControlName="accountNumber" class="form-control" id="input-modal" placeholder="Conta" /><br>
+              
+              <label style="position: relative; margin-bottom: -5px;">Descrição</label>
+              <input type="text" formControlName="description" class="form-control" id="input-modal" placeholder="Descrição" /><br>
+
+              <label style="position: relative; margin-bottom: -5px;">Label</label>
+              <mat-select [(ngModel)]="selectedCity2" class="form-control" id="input-modal" formControlName="label">
+        
+                <mat-option  *ngFor="let skill of descricaoValue" [value]="skill">{{skill}}</mat-option>
+              </mat-select><br><br>
+
+              <label *ngIf="openMenu" style="position: relative; margin-bottom: -5px;">Parametro</label>
+              <input *ngIf="openMenu" type="text" formControlName="parameters" class="form-control" id="input-modal" placeholder="Parametro" /><br>
+      
+
+              <label *ngIf="openWebbanking" style="position: relative; margin-bottom: -5px;">iconWeb</label>
+              <input *ngIf="openWebbanking" type="text" formControlName="iconWeb" class="form-control" id="input-modal" placeholder="iconWeb" /><br>
+  
+              
+              <label *ngIf="openWebbanking" style="position: relative; margin-bottom: -5px;">Ordem Webanking</label>
+              <input *ngIf="openWebbanking" maxlength="10" type="number" formControlName="sequenceWeb" class="form-control" id="input-modal" placeholder="Ordem Webanking" /><br>
+      
+            
+            </div>
+            <div class="col-sm">
+              <label style="position: relative; margin-bottom: -5px;">Status</label>
+              <mat-select  [(ngModel)]="modeselect" class="form-control" id="input-modal" formControlName="status" class="form-control" id="input-modal">
+                <mat-option *ngFor="let item of categoryStatus" [value]="item.type">{{item.name}}</mat-option>
+               
+                </mat-select ><br> <br>
+
+                <label style="position: relative; margin-bottom: -5px;">Mensagem Inativo</label>
+                <input type="text" formControlName="inactiveMessage" class="form-control" id="input-modal" placeholder="Mensagem Inativ" /><br>
+              
+              <mat-label>Aplicação</mat-label>
+          <mat-select  class="form-control" id="input-modal" formControlName="aplication" multiple>
+            <mat-option (click)="selectAplicarion()" *ngFor="let skill of aplicationValue" [value]="skill">{{skill}}</mat-option>
+          </mat-select><br><br>
+
+          <label *ngIf="openBackoffice" style="position: relative; margin-bottom: -5px;">icone Backoffice</label>
+          <input *ngIf="openBackoffice" type="text" formControlName="iconBackoffice" class="form-control" id="input-modal" placeholder="icone Backoffice" /><br>
+
+          <label *ngIf="openBackoffice" style="position: relative; margin-bottom: -5px;">Ordem Backoffice</label>
+              <input *ngIf="openBackoffice" maxlength="10" type="number" formControlName="sequenceBackoffice" class="form-control" id="input-modal" placeholder="Ordem Webanking" /><br>
+      
+            </div>
+          </div>
+
+          <button class="btn btn-info" type="submit" >
+           Cadastrar <i class="fas fa-chevron-right icon-xs ml-3"></i>
+          </button>
+
+      <!-- <button type="submit" mat-raised-button color="primary">Cadastrar</button> -->
+      <button (click)="modal(1)" mat-raised-button color="danger">Voltar</button>
+    </form>
+
+
+    <form *ngIf="typeForm == 3" [formGroup]="bioSection" (ngSubmit)="changeFunction()">
+          
+      <div class="row">
+        <div class="col-sm">
+          <label style="position: relative; margin-bottom: -5px;">Parceiro</label>
+      <select  formControlName="uuidWhitelabel" class="form-control" id="input-modal">
+        <option [selected]="true" [value]="selected">{{selected}} </option>
+        <option *ngFor="let skill of valueUuidWhitelabel"[selected]="skill.name == selected" [value]="skill.uuid">{{skill.name}}</option>
+      </select><br> 
+
+      <label style="position: relative; margin-bottom: -5px;">Título</label>
+      <input type="text" value="title" formControlName="title" class="form-control" id="input-modal" placeholder="Parceiro" /><br>
+
+      <label style="position: relative; margin-bottom: -5px;">Categoria</label>
+      <mat-select [(ngModel)]="selectedCategory" class="form-control" id="input-modal" formControlName="category">
+
+        <mat-option  *ngFor="let skill of categoryValue" [value]="skill">{{skill}}</mat-option>
+      </mat-select><br><br>
+
+      <label style="position: relative; margin-bottom: -5px;">URL</label>
+      <input type="text" formControlName="url" class="form-control" id="input-modal" placeholder="Parceiro" />
+
+      <!-- <label  style="position: relative; left: 5%; margin-bottom: -5px;">icone App</label>
+      <input  type="text" formControlName="iconApp" class="form-control" id="input-modal" placeholder="Parceiro" /><br>
+            
+      <label  style="position: relative; left: 5%; margin-bottom: -5px;">Ordem App</label>
+      <input  type="number" formControlName="sequenceApp" class="form-control" id="input-modal" placeholder="Parceiro" /><br>
+       -->
+
+        </div>
+        <div class="col-sm">
+
+          <label style="position: relative; margin-bottom: -5px;">Conta</label>
+      <input type="text" formControlName="accountNumber" class="form-control" id="input-modal" placeholder="Conta" /><br>
+      
+
+  
+          <label style="position: relative; margin-bottom: -5px;">Descrição</label>
+          <input type="text" formControlName="description" class="form-control" id="input-modal" placeholder="Parceiro" /><br>
+  
+
+          <label style="position: relative; margin-bottom: -5px;">Label</label>
+          <mat-select [(ngModel)]="selectedLabel" class="form-control" id="input-modal" formControlName="label">
+        
+            <mat-option  *ngFor="let skill of descricaoValue" [value]="skill">{{skill}}</mat-option>
+          </mat-select><br><br>
+
+
+          <label  style="position: relative; margin-bottom: -5px;">Parametro</label>
+          <input  type="text" formControlName="parameters" class="form-control" id="input-modal" placeholder="Parametro" /><br>
+  
+
+          <label  style="position: relative; margin-bottom: -5px;">iconWeb</label>
+          <input  type="text" formControlName="iconWeb" class="form-control" id="input-modal" placeholder="iconWeb" /><br>
+
+          
+          <label  style="position: relative; margin-bottom: -5px;">Ordem Webanking</label>
+          <input  type="number" formControlName="sequenceWeb" class="form-control" id="input-modal" placeholder="Ordem Webanking" /><br>
+  
+        </div>
+        <div class="col-sm">
+         
+         
+          <label style="position: relative; margin-bottom: -5px;">Status</label>
+          <select  formControlName="status" class="form-control" id="input-modal">
+            <option [value]="'ACTIVE'">Ativo</option>
+            <option  [value]="'INACTIVE'">Desativado</option>
+            </select><br> 
+
+            <label style="position: relative; margin-bottom: -5px;">Mensagem Inativo</label>
+            <input type="text" formControlName="inactiveMessage" class="form-control" id="input-modal" placeholder="Mensagem Inativo" /><br>
+          
+  
+          <mat-label>Aplicação</mat-label>
+          <mat-select class="form-control" id="input-modal" formControlName="aplication" multiple>
+            <mat-option  *ngFor="let skill of aplicationValue" [value]="skill">{{skill}}</mat-option>
+          </mat-select><br><br> 
+
+
+          <label  style="position: relative; margin-bottom: -5px;">icone Backoffice</label>
+          <input  type="text" formControlName="iconBackoffice" class="form-control" id="input-modal" placeholder="icone Backoffice" /><br>
+
+          <label  style="position: relative; margin-bottom: -5px;">Ordem Webanking</label>
+              <input  type="number" formControlName="sequenceWeb" class="form-control" id="input-modal" placeholder="Ordem Webanking" /><br>
+      
+        </div>
+
+        <div class="col-sm">
+          <label  style="position: relative; left: 5%; margin-bottom: -5px;">icone App</label>
+          <input  type="text" formControlName="iconApp" class="form-control" id="input-modal" placeholder="Parceiro" /><br>
+                
+          <label  style="position: relative; left: 5%; margin-bottom: -5px;">Ordem App</label>
+          <input  type="number" formControlName="sequenceApp" class="form-control" id="input-modal" placeholder="Parceiro" /><br>
+          
+          </div>
+      </div>
+
+      <button class="btn btn-info" type="submit" >
+        Alterar <i class="fas fa-chevron-right icon-xs ml-3"></i>
+       </button>
+  <!-- <button type="submit" mat-raised-button color="primary">Alterar</button> -->
+  <button (click)="modal(1)" mat-raised-button color="danger">Voltar</button>
+</form>
+
+      </div>
+
+    </div>
+   
+    
+    
+  </div>
+
+
+  

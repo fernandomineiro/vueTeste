@@ -1,0 +1,48 @@
+@import 'src/assets/sass/ui-components/ui-c-table-bo';
+@import 'src/assets/sass/ui-components/ui-c-taskbar-bo';
+
+
+.table-col {
+  height: auto;
+  padding: 33px;
+  max-width: 1316px;
+}
+
+
+input[type="checkbox"] {
+	display:none;
+}
+input[type="checkbox"]:checked ~ .modal,
+input[type="checkbox"]:checked ~ .modal-background {
+	display: block;
+}
+
+input[type="checkbox"]:checked ~ .delete,
+input[type="checkbox"]:checked ~ .delete-background {
+	display: block;
+}
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #FFF;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+  }
+
+.example-label {
+	box-sizing: border-box;
+    display: inline-block;
+    padding: 10px;
+    background-color: #375d91;
+    color: #f9f9f9;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.example-label:hover {
+	background-color: #3c669f;
+}

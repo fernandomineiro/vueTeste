@@ -1,0 +1,133 @@
+@import 'src/assets/sass/ui-components/ui-c-table-bo';
+@import 'src/assets/sass/ui-components/ui-c-taskbar-bo';
+
+.ui-c-table-bo {
+  width: 2050px;
+}
+
+.card-custom {
+  padding: 15px;
+}
+
+.table-col {
+  height: auto;
+  width: 2000px;
+  font-size: 12px;
+
+  .mat-column-accountPayment {
+    flex: 0 0 250px !important;
+    //white-space: unset !important;
+  }
+
+  .mat-column-statusAntiFraud,
+  .mat-column-status,
+  .mat-column-statusRestrictionList {
+    flex: 0 0 150px !important;
+    //white-space: unset !important;
+  }
+
+  .mat-column-analysisReason {
+    flex: 0 0 250px !important;
+    //white-space: unset !important;
+  }
+}
+
+.status-box {
+  border: solid 1px;
+  padding: 5px 10px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #000000;
+  border-color: #000000;
+  background-color: rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  margin: 0 10px;
+  cursor: pointer;
+
+  &.success {
+    color: #2e7d32;
+    border-color: #2e7d32;
+    background-color: rgba(46, 125, 50, 0.1);
+  }
+
+  &.error {
+    color: #bf360c;
+    border-color: #bf360c;
+    background-color: rgba(191, 54, 12, 0.1);
+  }
+
+  &.error-dark {
+    color: #b71c1c;
+    border-color: #b71c1c;
+    background-color: rgba(183, 28, 28, 0.1);
+  }
+
+  &.warn {
+    color: #f9a825;
+    border-color: #f9a825;
+    background-color: rgba(249, 168, 37, 0.1);
+  }
+
+  &.info {
+    color: #2196f3;
+    border-color: #2196f3;
+    background-color: rgba(33, 150, 243, 0.1);
+  }
+
+  &.purple {
+    color: #9c27b0;
+    border-color: #9c27b0;
+    background-color: rgba(156, 39, 176, 0.1);
+  }
+
+  &.teal {
+    color: #009688;
+    border-color: #009688;
+    background-color: rgba(0, 150, 136, 0.1);
+  }
+
+  &.outlined {
+    background-color: transparent !important;
+  }
+}
+
+.ui-c-taskbar-bo .search-col {
+  max-width: 1316px;
+  min-height: 250px !important;
+  padding: 11px;
+  display: block;
+}
+
+.mat-form-field {
+  width: 250px !important;
+  margin-left: 45px;
+}
+// mat-row {
+//   overflow-wrap: anywhere;
+// }
+
+// mat-col {
+//   width: 100%;
+// }
+
+// .mat-column-id {
+//   width: 32px;
+// }
+
+// mat-header mat-cell {
+//   width: 100%;
+// }
+
+// .mat-table {
+//   width: 100%;
+//   padding: 15px;
+//   font-family: $font-regular;
+
+//   .mat-header-row th,
+//   .mat-row td {
+//     width: 100%;
+//     text-align: left;
+//   }
+// }

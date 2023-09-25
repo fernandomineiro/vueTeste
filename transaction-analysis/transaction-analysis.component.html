@@ -1,0 +1,410 @@
+<ui-c-subheader [menuTitle]="'Gerenciamento de Transações'"> </ui-c-subheader>
+
+<!-- <div class="ui-c-taskbar-bo">
+  <div class="card card-custom search-col">
+    <div class="row d-flex justify-content-between pr-0 pl-10 col-12">
+      <div class="col-6 search-bar">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Pesquisar..." #searchInput (keyup)="applyFilter()" />
+          <div class="input-group-prepend">
+            <button class="btn btn-secondary" type="button">Pesquisar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+<div class="ui-c-taskbar-bo">
+  <div class="card card-custom search-col">
+    <mat-form-field appearance="fill" class="filter w-100">
+      <mat-label>Tipo</mat-label>
+      <mat-select multiple [formControl]="typeForm">
+        <mat-option value="CASH_IN"> CASH IN </mat-option>
+        <mat-option value="CASH_OUT"> CASH OUT </mat-option>
+      </mat-select>
+    </mat-form-field>
+ 
+    <mat-form-field appearance="fill" class="filter w-100">
+      <mat-label>Lista de restrição</mat-label>
+      <mat-select multiple [formControl]="listRestrictionForm">
+        <mat-option value="APPROVED">
+          APROVADO
+        </mat-option>
+        <mat-option value="REPROVED">
+          REPROVADO
+        </mat-option>
+        <mat-option value="IN_ANALYSIS">
+          EM ANÁLISE
+        </mat-option>
+        <mat-option value="NOT_VERIFIED">
+          NÃO VERIFICADO
+        </mat-option>
+        <mat-option value="WARNING">
+         ALERTA
+        </mat-option>
+        <mat-option value="FAIL">
+          FALHA
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="filter w-100">
+      <mat-label>Anti-Fraude</mat-label>
+      <mat-select multiple [formControl]="antFraudForm">
+        <mat-option value="APPROVED">
+          APROVADO
+        </mat-option>
+        <mat-option value="REPROVED">
+          REPROVADO
+        </mat-option>
+        <mat-option value="IN_ANALYSIS">
+          EM ANÁLISE
+        </mat-option>
+        <mat-option value="NOT_VERIFIED">
+          NÃO VERIFICADO
+        </mat-option>
+        <mat-option value="FAIL">
+          FALHA
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <br />
+
+    <mat-form-field appearance="fill" class="filter w-100">
+      <mat-label>Status Análise Manual</mat-label>
+      <mat-select multiple [formControl]="statusManualAnalysisForm" >
+        <mat-option value="APPROVED">
+          APROVADO
+        </mat-option>
+        <mat-option value="REPROVED">
+          REPROVADO
+        </mat-option>
+        <mat-option value="IN_ANALYSIS">
+          EM ANÁLISE
+        </mat-option>
+        <mat-option value="NOT_VERIFIED">
+          NÃO VERIFICADO
+        </mat-option>
+        <mat-option value="FAIL">
+          FALHA
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="mt-0 mb-0">
+      <mat-label>Data Início</mat-label>
+      <input matInput (dateInput)="startDateChange($event.value)" [matDatepicker]="picker" />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="mt-0 mb-0">
+      <mat-label>Data Final</mat-label>
+      <input matInput (dateInput)="endDateChange($event.value)" [matDatepicker]="picker2" />
+      <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+      <mat-datepicker #picker2></mat-datepicker>
+    </mat-form-field>
+
+    <br />
+    <div>
+      <mat-form-field appearance="fill" class="filter w-100">
+        <mat-label>Parceiros</mat-label>
+        <mat-select
+          #singleSelect
+          [disabled]="enableCombo"
+          [formControl]="whiteLabelCtrl"
+          (keyup.enter)="changeWhiteLabel()"
+        >
+          <mat-option>
+            <ngx-mat-select-search
+              [formControl]="whiteLabelFilterCtrl"
+              placeholderLabel="Filtrar"
+              noEntriesFoundLabel="Nenhum WhiteLabel Encontrado"
+            >
+            </ngx-mat-select-search>
+          </mat-option>
+          <mat-option
+            *ngFor="let whiteLabel of filteredWhiteLabel | async"
+            [value]="whiteLabel.uuid"
+            (click)="changeWhiteLabel()"
+          >
+            {{ whiteLabel.name.toUpperCase() }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="row d-flex justify-content-between pr-0 pl-10 col-12">
+      <div class="col-12 search-bar">
+        <div class="input-group justify-content-end">
+          <div class="col-1 d-flex justify-content-end button-width">
+            <button class="btn btn-secondary" type="button" (click)="applyFilter()">Pesquisar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ui-c-table-bo p-0" #element>
+  <div class="card card-custom mt-10">
+    <table class="table-col" mat-table #table [dataSource]="dataSource">
+      <!-- Project Column -->
+      <!-- <ng-container matColumnDef="id">
+        <mat-header-cell *matHeaderCellDef class="font-family-bold pl-1">Cod.</mat-header-cell>
+        <mat-cell *matCellDef="let element" class="font-family-semibold pl-5">{{ element?.id }}</mat-cell>
+      </ng-container> -->
+      <!-- CNPJ Column -->
+      <ng-container matColumnDef="whitelabel">
+        <mat-header-cell *matHeaderCellDef class="font-family-bold">Projeto</mat-header-cell>
+        <mat-cell *matCellDef="let element" class="font-family-semibold">{{
+          element?.whiteLabel.fantasyName
+        }}</mat-cell>
+      </ng-container>
+      <!-- Account Payment Column -->
+      <ng-container matColumnDef="accountPayment">
+        <mat-header-cell *matHeaderCellDef class="font-family-bold">Conta de Pagamento</mat-header-cell>
+        <mat-cell *matCellDef="let element" class="font-family-semibold">
+          <p style="padding: 0; margin: 0">
+            <strong>Conta: {{ formatAccountNumber(element?.accountPayment.accountNumber) }}</strong
+            ><br />
+            {{ element?.accountPayment?.accountPaymentPerson?.fullName }}<br />
+            <small style="white-space: nowrap"
+              >CPF/CNPJ: {{ formatDocument(element?.accountPayment?.accountPaymentPerson?.documentDefault) }}</small
+            ><br />
+            <small
+              style="white-space: nowrap"
+              *ngIf="element?.accountPayment?.accountPaymentContact?.cellphone !== null"
+              >{{ formatCellphone(element?.accountPayment?.accountPaymentContact?.cellphone) }}</small
+            ><br *ngIf="element?.accountPayment?.accountPaymentContact?.cellphone !== null" />
+            <small style="white-space: nowrap" *ngIf="element?.accountPayment?.accountPaymentContact?.email !== null">{{
+              element?.accountPayment?.accountPaymentContact?.email
+            }}</small>
+          </p>
+        </mat-cell>
+      </ng-container>
+      <!-- Operation Column -->
+      <ng-container matColumnDef="operation">
+        <mat-header-cell *matHeaderCellDef class="font-family-bold">Operação</mat-header-cell>
+        <mat-cell *matCellDef="let element" class="font-family-semibold">{{ element?.operation.name }}</mat-cell>
+      </ng-container>
+      <!-- Value Transaction Column -->
+      <ng-container matColumnDef="valueTransaction">
+        <mat-header-cell *matHeaderCellDef class="font-family-bold">Valor</mat-header-cell>
+        <mat-cell *matCellDef="let element" class="font-family-semibold">
+          {{ element?.valueTransaction | currency : 'BRL' }}
+        </mat-cell>
+      </ng-container>
+      <!-- Status Column -->
+      <ng-container matColumnDef="type">
+        <mat-header-cell *matHeaderCellDef class="font-family-bold">Tipo</mat-header-cell>
+        <mat-cell *matCellDef="let element" class="font-family-semibold">
+          <span class="status-box info outlined" *ngIf="element?.type === 'CASH_IN'"> CASH IN </span>
+          <span class="status-box purple outlined" *ngIf="element?.type === 'CASH_OUT'"> CASH OUT </span>
+        </mat-cell>
+      </ng-container>
+      <!-- Restriction List Column -->
+      <ng-container matColumnDef="statusRestrictionList">
+        <mat-header-cell *matHeaderCellDef class="font-family-bold">Lista de Restrição</mat-header-cell>
+        <mat-cell *matCellDef="let element" class="font-family-semibold">
+          <span
+            [class]="getStatusCssClass(element?.statusRestrictionList)"
+            [matTooltip]="element?.descriptionStatusRestrictionList"
+          >
+            {{ getStatusTranslate(element?.statusRestrictionList) }}
+          </span>
+        </mat-cell>
+      </ng-container>
+      <!-- Restriction List Column -->
+      <ng-container matColumnDef="statusAntiFraud">
+        <mat-header-cell *matHeaderCellDef class="font-family-bold">AntiFraude</mat-header-cell>
+        <mat-cell *matCellDef="let element" class="font-family-semibold">
+          <span [class]="getStatusCssClass(element?.statusAntiFraud)">
+            {{ getStatusTranslate(element?.statusAntiFraud) }}
+          </span>
+        </mat-cell>
+      </ng-container>
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef class="font-family-bold">Status Análise Manual</mat-header-cell>
+        <mat-cell *matCellDef="let element" class="font-family-semibold">
+          <span [class]="getStatusCssClass(element?.status)">
+            {{ getStatusTranslate(element?.status) }}
+          </span>
+        </mat-cell>
+      </ng-container>
+      <!-- Analyst Reason Column denyReason-->
+      <ng-container matColumnDef="analysisReason">
+        <mat-header-cell *matHeaderCellDef class="font-family-bold">Parecer</mat-header-cell>
+        <mat-cell *matCellDef="let element" class="font-family-semibold">
+          <p style="margin: 0; padding: 0">
+            <span>{{ element?.analysisReason }}</span
+            ><br />
+            <small>{{ element?.denyReason }}</small
+            ><br *ngIf="element?.denyReason" />
+            <small>{{ element?.denyDescription }}</small>
+          </p>
+        </mat-cell>
+      </ng-container>
+      <!-- Analyst Reason Column -->
+      <!-- <ng-container matColumnDef="denyReason">
+        <mat-header-cell *matHeaderCellDef class="font-family-bold">Motivo Reprovação</mat-header-cell>
+        <mat-cell *matCellDef="let element" class="font-family-semibold">{{ element?.denyReason }}</mat-cell>
+      </ng-container> -->
+      <!-- Analyst User Column -->
+      <ng-container matColumnDef="analystUser">
+        <mat-header-cell *matHeaderCellDef class="font-family-bold">Analista</mat-header-cell>
+        <mat-cell *matCellDef="let element" class="font-family-semibold">{{ element?.analystUser }}</mat-cell>
+      </ng-container>
+      <!-- Date Register Column -->
+      <ng-container matColumnDef="dateRegister">
+        <mat-header-cell *matHeaderCellDef class="font-family-bold">Registrado em</mat-header-cell>
+        <mat-cell *matCellDef="let element" class="font-family-semibold">
+          {{ element?.dateRegister | date : 'dd/MM/yyyy HH:mm' }}
+        </mat-cell>
+      </ng-container>
+      <!-- Date Updated Column -->
+      <ng-container matColumnDef="dateUpdated">
+        <mat-header-cell *matHeaderCellDef class="font-family-bold">Atualizado em</mat-header-cell>
+        <mat-cell *matCellDef="let element" class="font-family-semibold">
+          {{ element?.dateUpdated | date : 'dd/MM/yyyy HH:mm' }}
+        </mat-cell>
+      </ng-container>
+      <!-- Action Buttons Column -->
+      <ng-container matColumnDef="reproveAction">
+        <mat-header-cell *matHeaderCellDef class="font-family-bold"></mat-header-cell>
+        <mat-cell *matCellDef="let element" class="font-family-semibold">
+          <button
+            type="button"
+            *ngIf="isAllowedActions(element)"
+            class="btn btn-danger"
+            (click)="open(reprove, element)"
+          >
+            <strong><span style="white-space: nowrap">Reprovar</span></strong>
+          </button>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="aproveAction">
+        <mat-header-cell *matHeaderCellDef class="font-family-bold"></mat-header-cell>
+        <mat-cell *matCellDef="let element" class="font-family-semibold">
+          <button
+            type="button"
+            *ngIf="isAllowedActions(element)"
+            class="btn btn-success"
+            (click)="open(aprove, element)"
+          >
+            <strong><span style="white-space: nowrap">Aprovar</span></strong>
+          </button>
+        </mat-cell>
+      </ng-container>
+
+      <ng-template #reprove let-modal>
+        <div class="modal-header">
+          <h4 class="modal-title" id="modal-basic-title">REPROVAÇÃO DE TRANSAÇÃO</h4>
+          <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body row">
+          <div class="col-12">
+            <mat-form-field appearance="fill" style="width: 100%">
+              <mat-label>Motivo da Reprovação</mat-label>
+              <mat-select (selectionChange)="onChangeMotivo($event.value)">
+                <mat-option *ngFor="let motivo of motivos" [value]="motivo.value">
+                  {{ motivo.description }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="input-group mb-3 col-12">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>O que foi relatado?</mat-label>
+              <textarea matInput [(ngModel)]="relatadoReprovar" rows="6"></textarea>
+            </mat-form-field>
+          </div>
+          <div class="input-group mb-3 col-12">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>Qual é o parecer?</mat-label>
+              <textarea matInput [(ngModel)]="parecerReprovar" rows="6"></textarea>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="closeModal()">
+            <span style="white-space: nowrap">Cancelar</span>
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            [disabled]="
+              relatadoReprovar == undefined ||
+              relatadoReprovar == '' ||
+              parecerReprovar == undefined ||
+              parecerReprovar == '' ||
+              motivo == ''
+            "
+            (click)="reproveRequest()"
+          >
+            <strong><span style="white-space: nowrap">Reprovar</span></strong>
+          </button>
+        </div>
+      </ng-template>
+
+      <ng-template #aprove let-modal>
+        <div class="modal-header">
+          <h4 class="modal-title" id="modal-basic-title">APROVAÇÃO DE TRANSAÇÃO</h4>
+          <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="input-group mb-3">
+            <!-- <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroup-sizing-default">Motivo</span>
+            </div>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="aprovadoMotivo"
+              aria-label="Default"
+              aria-describedby="inputGroup-sizing-default"
+            /> -->
+
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>Qual é o parecer?</mat-label>
+              <textarea matInput [(ngModel)]="aprovadoMotivo" rows="6"></textarea>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="modal.close('Cancelado')">
+            <span style="white-space: nowrap">Cancelar</span>
+          </button>
+          <button
+            type="button"
+            class="btn btn-success"
+            [disabled]="aprovadoMotivo == undefined || aprovadoMotivo == ''"
+            (click)="aproveRequest()"
+          >
+            <strong><span style="white-space: nowrap">Aprovar</span></strong>
+          </button>
+        </div>
+      </ng-template>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    </table>
+    <mat-paginator
+      #paginator
+      [length]="pagination.itemCount"
+      [pageSize]="pagination.limit"
+      [pageIndex]="pagination.page - 1"
+      [pageSizeOptions]="pageSizeOptions"
+      [showFirstLastButtons]="false"
+      (page)="updatePagination($event)"
+    >
+    </mat-paginator>
+  </div>
+</div>
